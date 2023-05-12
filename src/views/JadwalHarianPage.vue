@@ -10,7 +10,18 @@
           <v-card-title>
             Timetables of GoFit
             <v-spacer></v-spacer>
+            <v-text-field
+              v-model="searchText"
+              dense filled rounded clearable placeholder="Search" 
+              prepend-inner-icon="mdi-magnify" 
+              class="pt-6 shrink expanding-search" 
+              :class="{ closed: searchBoxClosed && !searchText }" 
+              @keyup.enter="onSearch(searchText)" 
+              @focus="searchBoxClosed = false"
+              @blur="searchBoxClosed = true">
+            </v-text-field>
           </v-card-title>
+          
       </v-card>
           <v-divider class="mx-4"></v-divider>
           <v-card elevation=2 class="mb-5">
@@ -310,6 +321,61 @@
               </v-card-text>
             </v-card>
           </v-dialog>
+
+          <v-dialog
+            max-width="70%"
+            v-model="dialogSearch"
+            persistent
+            transition="dialog-bottom-transition">
+            <v-card class="center" >
+              <v-card-title>
+                <div >
+                  <span class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 border-bottom">Searched Daily Schedule</span>
+                </div>
+              </v-card-title>
+              <hr/>
+              <v-card-text>
+                <v-simple-table>
+                  <template v-slot:default>
+                    <thead>
+                    </thead>
+                    <tbody>
+                      <tr style="float: left;">Morning Class</tr>
+                      <tr v-for="item in searchSchedule" :key="item.id_jadwal">
+                        <v-card class="ml-10 mt-2 mb-2" max-width="70%" elevation=5 v-if="item.sesi_jadwal == 0">
+                        <v-card-text>
+                          <p>{{ item.jam_mulai }}</p>
+                          <p>{{ item.nama_kelas }}</p>
+                          <p>{{ item.nama_instruktur }}</p>
+                          <p>{{ item.status }}</p>
+                        </v-card-text>
+                      </v-card>
+                      </tr>
+                      <tr class="mt-5" style="float: left;">Evening Class</tr>
+                      <tr v-for="item in searchSchedule" :key="item.id_jadwal">
+                        <v-card class="ml-10 mt-2 mb-5" max-width="70%" elevation=5 v-if="item.sesi_jadwal == 1">
+                        <v-card-text>
+                          <p>{{ item.jam_mulai }}</p>
+                          <p>{{ item.nama_kelas }}</p>
+                          <p>{{ item.nama_instruktur }}</p>
+                          <p>{{ item.status }}</p>
+                        </v-card-text>
+                      </v-card>
+                      </tr>
+                      
+                    </tbody>
+                  </template>
+                </v-simple-table>
+                
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn text @click="cancel">
+                    Cancel
+                  </v-btn>
+                </v-card-actions>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
           
           <v-dialog 
             v-model="dialogConfirm" 
@@ -325,9 +391,7 @@
                 <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn text color="red" @click="dialogConfirm = false"> Cancel </v-btn>
-                <v-btn text v-if="formTitle == 'Create'" color="#9155FD" @click="submit"> Create </v-btn>
-                <v-btn text v-else-if="formTitle == 'Update'" color="#9155FD" @click="update"> Update </v-btn>
-                <v-btn text v-else color="#9155FD" @click="deleteData"> Delete </v-btn>
+                <v-btn text color="#9155FD" @click="update"> Update </v-btn>
                 </v-card-actions>
             </v-card>
             </v-dialog>
@@ -351,9 +415,14 @@
         inputType: "Create",
         deleteId: "",
         editId: "",
-        search: null,
+        searchText: null,
+        searchBoxClosed: true,
         load: false,
         snackbar: false,
+        column: [
+          { number : 1 },
+          { number: 2 }
+        ],
         sesi: [
           { text: "Morning", value: 0 },
           { text: "Evening", value: 1 },
@@ -368,12 +437,14 @@
         schedulesFriday: [],
         schedulesSaturday: [],
         schedulesSunday: [],
+        searchSchedule:[],
         items: [],
         transaction: new FormData(),
         message: "",
         dialog: false,
         color: "",
         dialogConfirm: false,
+        dialogSearch: false,
         pegawai: [ {
             id_kasir: localStorage.getItem("id_pegawai"),
             nama_kasir: localStorage.getItem("nama_pegawai"),
@@ -642,11 +713,43 @@
 
           }
         },
+      onSearch(searchText) {
+        console.log(searchText);
+        if(searchText == null || searchText == "") {
+          this.snackbar = true;
+          this.message = "Search Text cannot be empty";
+          this.color = "red";
+
+        } else {
+          var url = this.$api + "/search/" + searchText;
+          this.load = true;
+          this.$http
+          .get(url, {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          })
+          .then((response) => {
+            console.log(response.data.data);
+            this.searchSchedule = response.data.data;
+            this.dialogSearch = true;
+            this.load = false;
+          })
+          .catch((error) => {
+            console.log(error);
+            this.message = error.response.data.message;
+            this.color = "red";
+            this.snackbar = true;
+            this.load = false;
+          });
+        }
+      },
       cancel() {
         this.resetForm();
         this.dialog = false;
         this.inputType = "Create";
-        this.getDataTransaction();
+        this.dialogSearch = false;
+        this.searchText = null;
       },
       editJadwal(item){
         this.inputType = "Update";
@@ -697,5 +800,12 @@
   .v-data-table > .v-data-table__wrapper > table > tbody > tr:nth-child(even) {
     border-left: 6px solid #ffffff;
   }
+}
+
+.v-input.expanding-search {
+  transition: max-width 0.5s;
+}
+.v-input.expanding-search.closed {
+  max-width: 70px;
 }
 </style>

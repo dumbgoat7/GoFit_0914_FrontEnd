@@ -10,16 +10,17 @@
           <v-col>
             <v-text-field
               v-model="search"
-              append-icon="mdi-magnify"
-              label="Cari Data"
-              single-line
-              hide-details
-              outlined
+              dense filled rounded clearable placeholder="Search" 
+              prepend-inner-icon="mdi-magnify" 
+              class="pt-6 shrink expanding-search" 
+              :class="{ closed: searchBoxClosed && !search }" 
+              @focus="searchBoxClosed = false"
+              @blur="searchBoxClosed = true">
             ></v-text-field>
           </v-col>
-          <div style="margin-top: 5px" class="ml-auto">
+          <div class="ml-auto">
             <v-btn
-              class="mx-2 mt-4 mb-4"
+              class="mt-9 mr-2"
               color="#9155FD"
               style="font-weight: bold; color: white"
               link
@@ -30,6 +31,7 @@
           </div>
         </div>
       </v-card>
+
       <v-card>
         <v-card-title>
           List Data of Activation Transaction
@@ -84,12 +86,49 @@
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="red" text @click="windowPrint()">Print</v-btn>
+          <v-btn color="red" text @click="windowPrint">Print</v-btn>
           <v-spacer></v-spacer>
           <v-btn color="primary" text @click="printDialog = false">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog
+      fullscreen
+      v-model="printView"
+      persistent
+      transition="dialog-bottom-transition">
+      
+      <v-card class="center">
+        <v-card-text>
+          <v-row class="pt-5">
+            <p style="font-weight: bold;" class="text--primary">GoFit</p>
+            <v-spacer></v-spacer>
+            <p class="pr-16 text--primary">No Struk : {{ Printdata.no_struk_akt }}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <p class="text--primary">Jl. Centralpark No.10 Yogyakarta</p>
+            <v-spacer></v-spacer>
+            <p class="text--primary">Tanggal : {{ Printdata.tanggal_transaksi }}</p>
+          </v-row>
+          <v-row>
+            <p style="font-weight: bold;" class="text--primary">Member :</p>
+            <p class="text--primary" style="float: left;"> {{ Printdata.id_member }} / {{ Printdata.nama_member}}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <p class="text--primary">Aktivasi Tahunan : {{ Printdata.biaya_transaksi }}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <p class="text--primary">Masa aktif Member : {{ Printdata.masa_berlaku }}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <v-spacer></v-spacer>
+            <p class="text--primary pr-16">Kasir : P{{ Printdata.id_kasir }}/{{ Printdata.nama_pegawai }}</p>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
     </v-main>
   </template>
   
@@ -100,6 +139,7 @@
         deleteId: "",
         editId: "",
         search: null,
+        searchBoxClosed: true,
         load: false,
         printDialog: false,
         snackbar: false,
@@ -204,8 +244,15 @@
         this.dataprint.nama_pegawai = item.nama_pegawai;
       },
       windowPrint(){
-        window.print();
+        this.printDialog = false;
+        this.printView = true;
+        setTimeout(() => {
+          window.print();
+        }, 500)
       },
+      Printing(){
+        window.print();
+      }
 
     },
   };
@@ -234,13 +281,12 @@
     }
   }
   @media print {
-    body {
-    height: 0%;
-    width: 0%;
-    overflow: hidden;
-    margin: 0;
-    padding: 0;
 
+  html, body {
+    height:100%; 
+    margin: 0 !important; 
+    padding: 0 !important;
+    overflow: hidden;
   }
 }
   </style>

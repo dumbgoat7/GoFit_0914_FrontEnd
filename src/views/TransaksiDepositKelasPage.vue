@@ -10,16 +10,17 @@
           <v-col>
             <v-text-field
               v-model="search"
-              append-icon="mdi-magnify"
-              label="Cari Data"
-              single-line
-              hide-details
-              outlined
+              dense filled rounded clearable placeholder="Search" 
+              prepend-inner-icon="mdi-magnify" 
+              class="pt-6 shrink expanding-search" 
+              :class="{ closed: searchBoxClosed && !search }" 
+              @focus="searchBoxClosed = false"
+              @blur="searchBoxClosed = true">
             ></v-text-field>
           </v-col>
-          <div style="margin-top: 5px" class="ml-auto">
+          <div class="ml-auto">
             <v-btn
-              class="mx-2 mt-4 mb-4"
+              class="mt-9 mr-2"
               color="#9155FD"
               style="font-weight: bold; color: white"
               link
@@ -30,6 +31,7 @@
           </div>
         </div>
       </v-card>
+
       <v-card>
         <v-card-title>
           List Data of Deposit (Class)
@@ -118,6 +120,7 @@
         expanded: [],
         printDialog: false,
         search: null,
+        searchBoxClosed: true,
         load: false,
         snackbar: false,
         members: [],
