@@ -260,13 +260,6 @@
                     </v-text-field>
 
                     <v-text-field
-                      v-model="form.tanggal_jadwal"
-                      label="Schedule's Date"
-                      type="date"
-                      required>
-                    </v-text-field>
-
-                    <v-text-field
                       v-model="form.jam_mulai"
                       label="Start Time (hh:mm:ss)"
                       required>
@@ -370,7 +363,6 @@
           id_kelas: null,
           id_instruktur: null,
           hari: null,
-          tanggal_jadwal: null,
           jam_mulai: null,
           sesi_jadwal: null,
         },
@@ -391,7 +383,6 @@
     this.getDataScheduleSunday();
     this.getDataClass();
     this.getDataInstructur();
-    console.log(this.items);
     },
     methods: {
       getDataScheduleMonday() {
@@ -560,11 +551,6 @@
           this.color = "error";
           this.snackbar = true;
           this.dialogConfirm = false;
-        } else if (this.form.tanggal_jadwal == null) {
-          this.message = "Date cannot be empty";
-          this.color = "error";
-          this.snackbar = true;
-          this.dialogConfirm = false;
         } else if (this.form.jam_mulai == null) {
           this.message = "Start Time cannot be empty";
           this.color = "error";
@@ -580,7 +566,6 @@
           formData.append("id_kelas", this.form.id_kelas);
           formData.append("id_instruktur", this.form.id_instruktur);
           formData.append("hari", this.form.hari);
-          formData.append("tanggal_jadwal", this.form.tanggal_jadwal);
           formData.append("jam_mulai", this.form.jam_mulai);
           formData.append("sesi_jadwal", this.form.sesi_jadwal);
 
@@ -634,11 +619,6 @@
           this.color = "error";
           this.snackbar = true;
           this.dialogConfirm = false;
-        } else if (this.form.tanggal_jadwal == null) {
-          this.message = "Date cannot be empty";
-          this.color = "error";
-          this.snackbar = true;
-          this.dialogConfirm = false;
         } else if (this.form.jam_mulai == null) {
           this.message = "Start Time cannot be empty";
           this.color = "error";
@@ -654,7 +634,6 @@
             id_kelas: this.form.id_kelas,
             id_instruktur: this.form.id_instruktur,
             hari: this.form.hari,
-            tanggal_jadwal: this.form.tanggal_jadwal,
             jam_mulai: this.form.jam_mulai,
             sesi_jadwal: this.form.sesi_jadwal,
           };
@@ -701,7 +680,6 @@
         this.form.id_kelas = item.id_kelas;
         this.form.id_instruktur = item.id_instruktur;
         this.form.hari = item.hari;
-        this.form.tanggal_jadwal = item.tanggal_jadwal;
         this.form.jam_mulai = item.jam_mulai;
         this.form.sesi_jadwal = item.sesi_jadwal;
         this.dialog = true;
@@ -725,7 +703,6 @@
           id_kelas: null,
           id_instruktur: null,
           hari: null,
-          tanggal_jadwal: null,
           jam_mulai: null,
           sesi_jadwal: null,
         };

@@ -89,6 +89,12 @@ const router = new VueRouter({
               name: 'depositKelas',
               meta: {title : 'depositKelas'},
               component: importViewComponent('TransaksiDepositKelasPage'),
+            },
+            {
+              path: '/ijin-instruktur',
+              name: 'ijinInstruktur',
+              meta: {title : 'ijinInstruktur'},
+              component: importViewComponent('IjinInstrukturPage'),
             }
           ]
     },

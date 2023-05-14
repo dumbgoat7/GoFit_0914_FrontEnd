@@ -4,7 +4,7 @@
           class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 mb-3 border-bottom">
           <v-icon>>mdi-chevron-right</v-icon>
 
-          <h3 class="h2"> Regular Deposit</h3>
+          <h3 class="h2"> Deposit</h3>
           <v-icon>mdi-chevron-right</v-icon>
           <h3 class="h2">List Member</h3>
           
@@ -39,6 +39,9 @@
             <p v-if="item.status == 1">Active</p>
             <p v-else>Not Active</p>
           </template>
+          <template v-slot:[`item.deposit_member`]="{ item }">
+            <p> Rp. {{ formatNumber(item.deposit_member) }}</p>
+          </template>
 
           <template v-slot:[`item.actions`]="{ item }">
             <v-btn color="#AE8DC9" class="mr-2 white--text" @click="setDialogRegular(item)">
@@ -61,7 +64,7 @@
         <v-card class="center" >
           <v-card-title>
             <div >
-              <span class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 border-bottom">{{ formTitle }} Activation Transaction</span>
+              <span class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 border-bottom">{{ formTitle }} Regular Deposit Transaction</span>
             </div>
           </v-card-title>
           <hr/>
@@ -83,15 +86,6 @@
                 item-text="nama_kasir"
                 required
                 disabled>
-              </v-select>
-
-              <v-select
-                :items="promo"
-                v-model="form.id_promo"
-                label="Promo"
-                item-value="id"
-                item-text="nama_promo"
-                required>
               </v-select>
 
               <v-text-field
@@ -121,7 +115,7 @@
         <v-card class="center" >
           <v-card-title>
             <div >
-              <span class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 border-bottom">{{ formTitle }} Activation Transaction</span>
+              <span class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 border-bottom">{{ formTitle }} Class Deposit Transaction</span>
             </div>
           </v-card-title>
           <hr/>
@@ -129,7 +123,7 @@
             <v-container>
                 <v-select
                 :items="members"
-                v-model="form.id_member"
+                v-model="formDepoKelas.id_member"
                 label="Member's Name"
                 item-value="id_member"
                 item-text="nama_member"
@@ -137,7 +131,7 @@
                 ></v-select>
               <v-select
                 :items="pegawai"
-                v-model="form.id_kasir"
+                v-model="formDepoKelas.id_kasir"
                 label="Employee's Name"
                 item-value="id_kasir"
                 item-text="nama_kasir"
@@ -146,19 +140,20 @@
               </v-select>
 
               <v-select
-                :items="promo"
-                v-model="form.id_promo"
-                label="Promo"
-                item-value="id_promo"
-                item-text="nama_promo"
+                :items="kelas"
+                v-model="formDepoKelas.id_kelas"
+                label="Class Name"
+                item-value="id_kelas"
+                item-text="nama_kelas"
                 required>
               </v-select>
 
-              <v-text-field
-                v-model="form.tanggal_transaksi"
-                label="Date of Transaction"
-                type="date"
-                required></v-text-field>
+              <v-select
+                :items="jumlahDepositKelas"
+                v-model="formDepoKelas.deposit_kelas"
+                label="Class Deposit"
+                required>
+              </v-select>
 
             </v-container>
             <v-card-actions>
@@ -166,7 +161,7 @@
                 Cancel
               </v-btn>
               <v-spacer></v-spacer>
-              <v-btn text style="margin-left: 15px" @click="dialogConfirm = true">
+              <v-btn text style="margin-left: 15px" @click="dialogConfirmDepoKelas = true">
                   Save
                 </v-btn>
             </v-card-actions>
@@ -185,13 +180,31 @@
               <span style="color: white; font-family: Poppins; font-weight: 800; font-size: 160%; margin: auto;">Alert!</span>   
             </v-toolbar>
           </v-card-title>
-          <v-card-text class="mt-5" style="color:black" > Are you sure? </v-card-text>
+          <v-card-text class="mt-5" style="color:black" > Are you sure to input this Regular Deposit? </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn text color="red" @click="dialogConfirm = false"> Cancel </v-btn>
-            <v-btn text color="#9155FD" @click="submit"> Save </v-btn> 
-            <!-- <v-btn v-if="inputType == 'Activate'" text color="#9155FD" @click="submit"> Activate </v-btn>  
-            <v-btn v-else text color="#9155FD" @click="deactiveMember"> Deactive </v-btn> -->
+            <v-btn text color="#9155FD" @click="submit"> Save </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog 
+      v-model="dialogConfirmDepoKelas" 
+      persistent 
+      max-width="300px">
+        <v-card style="border-radius: 15px;">
+          <v-card-title class="pa-0">
+            <v-toolbar color="#B18CEF" elevation="0" height="70%">
+              <span style="color: white; font-family: Poppins; font-weight: 800; font-size: 160%; margin: auto;">Alert!</span>   
+            </v-toolbar>
+          </v-card-title>
+          <v-card-text class="mt-5" style="color:black" > Are you sure to input this Class Deposit? </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text color="red" @click="dialogConfirmDepoKelas = false"> Cancel </v-btn>
+            <v-btn v="" text color="#9155FD" @click="submitDepoKelas"> Save </v-btn>
+
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -209,6 +222,7 @@
   </template>
   
   <script>
+  import numeral from "numeral";
   export default {
     data() {
       return {
@@ -220,15 +234,25 @@
         load: false,
         snackbar: false,
         members: [],
-        promo: [],
         transactions: [],
+        kelas: [],
         transaction: new FormData(),
         message: "",
         dialog: false,
         dialogKelas: false,
+        dialogConfirmDepoKelas: false,
         color: "",
         dialogConfirm: false,
-        
+        jumlahDepositKelas: [
+            {
+              value: 5,
+              text: "5 times",
+            },
+            {
+              value: 10,
+              text: "10 times",
+            }
+        ],
         pegawai: [ {
             id_kasir: localStorage.getItem("id_pegawai"),
             nama_kasir: localStorage.getItem("nama_pegawai"),
@@ -237,15 +261,15 @@
         form: {
           id_member: null,
           id_kasir: localStorage.getItem("id_pegawai"),
-          id_promo: null,
+          id_promo: 2,
           deposit: null,
         },
         formDepoKelas: {
             id_member: null,
             id_kasir: localStorage.getItem("id_pegawai"),
-            id_promo: null,
+            id_promo: 3,
             id_kelas: null,
-            deposit: null,
+            deposit_kelas: null,
         },
         headers: [
         {
@@ -279,9 +303,12 @@
     mounted() {
     this.getDataTransaction();
     this.getDataMember();
-    this.getDataPromo();
+    this.getDataKelas();
     },
     methods: {
+      formatNumber(value){
+        return numeral(value).format('0,0.00');
+      },
       getDataTransaction() {
         this.load = true;
         var url = this.$api + "/depositReguler";
@@ -312,9 +339,9 @@
           });
         this.load = true;
       },
-      getDataPromo(){
+      getDataKelas(){
         this.load = true;
-        var url = this.$api + "/promo";
+        var url = this.$api + "/kelas";
         this.$http
           .get(url, {
             headers: {
@@ -323,7 +350,7 @@
           })
           .then((response) => {
             console.log(response.data.data);
-            this.promo = response.data.data;
+            this.kelas = response.data.data;
             this.load = false;
           });
         this.load = true;
@@ -332,15 +359,15 @@
         this.dialog = true;
         this.form.id_member = item.id_member;
         this.form.id_kasir = localStorage.getItem("id_pegawai");
-        this.form.id_promo = null;
+        this.form.id_promo = 2;
         this.form.deposit = null;
       },
-      setDialogKelas() {
-        // this.dialog = true;
-        // this.form.id_member = item.id_member;
-        // this.form.id_kasir = localStorage.getItem("id_pegawai");
-        // this.form.id_promo = '';
-        // this.form.deposit = '';
+      setDialogKelas(item) {
+        this.dialogKelas = true;
+        this.formDepoKelas.id_member = item.id_member;
+        this.formDepoKelas.id_kasir = localStorage.getItem("id_pegawai");
+        this.formDepoKelas.id_promo = 3;
+
       },
       submit() {
         if(this.form.id_member == null) {
@@ -348,19 +375,6 @@
           this.color = "error";
           this.snackbar = true;
           this.dialogConfirm = false;
-        } else if (this.form.id_promo == null) {
-          this.message = "Promo cannot be empty";
-          this.color = "error";
-          this.snackbar = true;
-          this.dialogConfirm = false;
-          if(this.form.id_promo == 2) {
-            if(this.form.deposit < 500000) {
-                this.message = "Deposit cannot be less than 500000";
-                this.color = "error";
-                this.snackbar = true;
-                this.dialogConfirm = false;
-            }
-          }
         } else if (this.form.deposit == null){
             this.message = "Deposit cannot be empty";
             this.color = "error";
@@ -368,6 +382,11 @@
             this.dialogConfirm = false;
         } else if (this.form.deposit < 0){
             this.message = "Deposit cannot be negative";
+            this.color = "error";
+            this.snackbar = true;
+            this.dialogConfirm = false;
+        } else if(this.form.deposit < 500000) {
+            this.message = "Deposit cannot be less than 500000";
             this.color = "error";
             this.snackbar = true;
             this.dialogConfirm = false;
@@ -391,11 +410,62 @@
                 this.message = response.data.message;
                 this.color = "success";
                 this.snackbar = true;
-                this.load = false;
                 this.getDataTransaction();
                 this.resetForm();
+                this.load = false;
                 this.dialog = false;
                 this.dialogConfirm = false;
+            })
+            .catch((error) => {
+                console.log(error.response.data.message);
+                this.message = error.response.data.message;
+                this.color = "error";
+                this.snackbar = true;
+                this.load = false;
+            });
+        }
+      },
+      submitDepoKelas(){
+        if(this.formDepoKelas.id_member == null) {
+          this.message = "Member's Name cannot be empty";
+          this.color = "error";
+          this.snackbar = true;
+          this.dialogConfirm = false;
+        } else if (this.formDepoKelas.id_kelas == null){
+            this.message = "Class Name cannot be empty";
+            this.color = "error";
+            this.snackbar = true;
+            this.dialogConfirm = false;
+        } else if (this.formDepoKelas.deposit_kelas == null){
+            this.message = "The number of class deposit cannot be empty";
+            this.color = "error";
+            this.snackbar = true;
+            this.dialogConfirm = false;
+        } else {
+            let formData = new FormData();
+            console.log(this.formDepoKelas);
+            formData.append("id_member", this.formDepoKelas.id_member);
+            formData.append("id_kasir", this.formDepoKelas.id_kasir);
+            formData.append("id_promo", this.formDepoKelas.id_promo);
+            formData.append("id_kelas", this.formDepoKelas.id_kelas);
+            formData.append("deposit_kelas", this.formDepoKelas.deposit_kelas);
+            this.load = true;
+            var url = this.$api + "/depositKelas";
+            this.$http
+            .post(url, formData, {
+                headers: {
+                Authorization: "Bearer " + localStorage.getItem("token"),
+                },
+            })
+            .then((response) => {
+                this.message = response.data.message;
+                this.color = "success";
+                this.snackbar = true;
+                this.getDataTransaction();
+                this.resetForm();
+                this.load = false;
+                this.dialogKelas = false;
+                this.dialogConfirmDepoKelas = false;
             })
             .catch((error) => {
                 console.log(error.response.data.message);
@@ -409,6 +479,7 @@
       cancel() {
         this.resetForm();
         this.dialog = false;
+        this.dialogKelas = false;
         this.inputType = "Activate";
         this.getDataTransaction();
       },
@@ -416,8 +487,13 @@
         this.form = {
         id_member: "",
         id_kasir: localStorage.getItem("id_pegawai"),
-        id_promo: "",
         deposit: "",
+        };
+        this.formDepoKelas = {
+            id_member: "",
+            id_kasir: localStorage.getItem("id_pegawai"),
+            id_kelas: "",
+            deposit_kelas: "",
         };
       },
     },

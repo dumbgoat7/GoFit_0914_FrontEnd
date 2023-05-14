@@ -47,7 +47,9 @@
         <template v-slot:[`item.actions`]="{ item }">
            <v-icon color="black" @click="print(item)">mdi-printer</v-icon>
         </template>
-
+        <template v-slot:[`item.deposit`]="{ item }">
+            <p> Rp. {{ formatNumber(item.deposit) }}</p>
+        </template>
         </v-data-table>
       </v-card>
       
@@ -83,16 +85,16 @@
             <p class="text--primary" style="float: left;"> {{ Printdata.id_member }} / {{ Printdata.nama_member}}</p>
           </v-row>
           <v-row class="mt-0">
-            <p class="text--primary">Deposit : {{Printdata.deposit }}</p>
+            <p class="text--primary">Deposit : Rp. {{ formatNumber(Printdata.deposit) }}</p>
           </v-row>
           <v-row class="mt-0">
-            <p class="text--primary">Bonus Deposit : {{ Printdata.bonus_deposit }}</p>
+            <p class="text--primary">Jenis Kelas : {{ Printdata.nama_kelas }}</p>
           </v-row>
           <v-row class="mt-0">
-            <p class="text--primary">Sisa deposit : {{ Printdata.sisa_deposit }}</p>
+            <p class="text--primary">Total Deposit {{ Printdata.nama_kelas }} : {{ Printdata.deposit_kelas }}</p>
           </v-row>
           <v-row class="mt-0">
-            <p class="text--primary">Total deposit : {{ Printdata.total_deposit }}</p>
+            <p class="text--primary">Masa Berlaku : {{ Printdata.masa_berlaku }}</p>
           </v-row>
           <v-row class="mt-0">
             <v-spacer></v-spacer>
@@ -111,6 +113,7 @@
   </template>
   
   <script>
+  import numeral from "numeral";
   export default {
     data() {
       return {
@@ -138,7 +141,7 @@
         form: {
           id_member: null,
           id_kasir: localStorage.getItem("id_pegawai"),
-          id_promo: null,
+          id_promo: 3,
           deposit: null,
         },
         dataprint: {
@@ -147,10 +150,10 @@
           nama_member: "",
           deposit: "",
           jenis_kelas: "",
-          total_deposit: "",
-          tanggal_transaksi: "",
+          deposit_kelas: "",
           masa_berlaku: "",
           nama_pegawai: "",
+          nama_kelas: "",
         },
         headers: [
           {
@@ -162,8 +165,16 @@
             value: "nama_member",
           },
           {
-            text: "Total Deposit",
-            value: "total_deposit",
+            text: "Deposit Class",
+            value: "deposit_kelas",
+          },
+          {
+            text: "Deposit",
+            value: "deposit",
+          },
+          {
+            text: "Active Until",
+            value: "masa_berlaku",
           },
           {
             text: "Action",
@@ -186,6 +197,9 @@
     this.getDataMember();
     },
     methods: {
+      formatNumber(value){
+        return numeral(value).format('0,0.00');
+      },
       getDataTransaction() {
         this.load = true;
         var url = this.$api + "/depositKelas";
@@ -223,13 +237,23 @@
         this.dataprint.no_struk = item.no_struk;
         this.dataprint.id_member = item.id_member;
         this.dataprint.nama_member = item.nama_member;
-        this.dataprint.bonus_deposit = item.bonus_deposit;
         this.dataprint.deposit = item.deposit;
-        this.dataprint.sisa_deposit = item.sisa_deposit;
-        this.dataprint.total_deposit = item.total_deposit;
+        this.dataprint.deposit_kelas = item.deposit_kelas;
         this.dataprint.tanggal_transaksi = item.tanggal_transaksi;
         this.dataprint.id_kasir = item.id_kasir;
         this.dataprint.nama_pegawai = item.nama_pegawai;
+        this.dataprint.nama_kelas = item.nama_kelas;
+        this.dataprint.masa_berlaku = item.masa_berlaku;
+      },
+      windowPrint(){
+        this.printDialog = false;
+        this.printView = true;
+        setTimeout(() => {
+          window.print();
+        }, 300);
+        setTimeout(() => {
+          this.printView = false;
+        }, 500);
       },
       cancel() {
         this.resetForm();

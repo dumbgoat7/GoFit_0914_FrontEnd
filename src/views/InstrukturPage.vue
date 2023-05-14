@@ -43,7 +43,7 @@
                 <p>Name: {{ item.nama_instruktur }}</p>
                 <p>Address: {{ item.alamat_instruktur }}</p>
                 <p>Phone Number: {{ item.no_telp }}</p>
-                <p>Gaji: {{ item.gaji_instruktur }}</p>
+                <p>Salary: Rp. {{ formatNumber(item.gaji_instruktur) }}</p>
                 <p>Email: {{ item.email_instruktur }}</p>
                 <p>Date of Birth: {{ item.tanggal_lahir }}</p>
                 <p>Username: {{ item.username }}</p>
@@ -182,6 +182,7 @@
 </template>
 
 <script>
+import numeral from 'numeral';
 export default {
   data() {
     return {
@@ -213,11 +214,11 @@ export default {
           value: "id",
         },
         {
-          text: "Nama Instruktur",
+          text: "Instructur's Name",
           value: "nama_instruktur",
         },
         {
-          text: "Nomor Telepon",
+          text: "Phone Number",
           value: "no_telp",
         },
         {
@@ -226,7 +227,7 @@ export default {
           width: "200px",
         },
         {
-          text: "Tanggal Lahir",
+          text: "Date of Birth",
           value: "tanggal_lahir",
           width: "200px",
         },
@@ -252,6 +253,9 @@ export default {
     //     currency: "IDR",
     //   });
     // },
+    formatNumber(value){
+        return numeral(value).format('0,0.00');
+      },
     setForm() {
       if (this.inputType !== "Create") {
         console.log(this.inputType);

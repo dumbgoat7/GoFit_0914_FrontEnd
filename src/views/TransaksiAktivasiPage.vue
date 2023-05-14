@@ -48,6 +48,9 @@
         <template v-slot:[`item.actions`]="{ item }">
            <v-icon color="black" @click="print(item)">mdi-printer</v-icon>
         </template>
+        <template v-slot:[`item.biaya_transaksi`]="{ item }">
+            <p> Rp. {{ formatNumber(item.biaya_transaksi) }}</p>
+        </template>
         </v-data-table>
       
       </v-card>
@@ -75,7 +78,7 @@
             <p class="text--primary" style="float: left;"> {{ Printdata.id_member }} / {{ Printdata.nama_member}}</p>
           </v-row>
           <v-row class="mt-0">
-            <p class="text--primary">Aktivasi Tahunan : {{ Printdata.biaya_transaksi }}</p>
+            <p class="text--primary">Aktivasi Tahunan : Rp. {{ formatNumber(Printdata.biaya_transaksi) }}</p>
           </v-row>
           <v-row class="mt-0">
             <p class="text--primary">Masa aktif Member : {{ Printdata.masa_berlaku }}</p>
@@ -116,7 +119,7 @@
             <p class="text--primary" style="float: left;"> {{ Printdata.id_member }} / {{ Printdata.nama_member}}</p>
           </v-row>
           <v-row class="mt-0">
-            <p class="text--primary">Aktivasi Tahunan : {{ Printdata.biaya_transaksi }}</p>
+            <p class="text--primary">Aktivasi Tahunan : Rp. {{ formatNumber(Printdata.biaya_transaksi) }}</p>
           </v-row>
           <v-row class="mt-0">
             <p class="text--primary">Masa aktif Member : {{ Printdata.masa_berlaku }}</p>
@@ -133,6 +136,9 @@
   </template>
   
   <script>
+  
+// import jsPDF from 'jspdf';
+import numeral from 'numeral'
   export default {
     data() {
       return {
@@ -142,6 +148,7 @@
         searchBoxClosed: true,
         load: false,
         printDialog: false,
+        printView: false,
         snackbar: false,
         members: [],
         transactions: [],
@@ -201,6 +208,9 @@
     this.getDataMember();
     },
     methods: {
+      formatNumber(value){
+        return numeral(value).format('0,0.00');
+      },
       getDataTransaction() {
         this.load = true;
         var url = this.$api + "/aktivasi";
@@ -248,12 +258,11 @@
         this.printView = true;
         setTimeout(() => {
           window.print();
-        }, 500)
+        }, 300);
+        setTimeout(() => {
+          this.printView = false;
+        }, 500);
       },
-      Printing(){
-        window.print();
-      }
-
     },
   };
   </script>

@@ -10,7 +10,10 @@
           <v-card-title>
             Timetables of GoFit
             <v-spacer></v-spacer>
-            <v-text-field
+            <v-btn> Generate </v-btn>
+          </v-card-title>
+      </v-card>
+          <v-text-field
               v-model="searchText"
               dense filled rounded clearable placeholder="Search" 
               prepend-inner-icon="mdi-magnify" 
@@ -20,9 +23,6 @@
               @focus="searchBoxClosed = false"
               @blur="searchBoxClosed = true">
             </v-text-field>
-          </v-card-title>
-          
-      </v-card>
           <v-divider class="mx-4"></v-divider>
           <v-card elevation=2 class="mb-5">
 
@@ -278,13 +278,6 @@
                     </v-text-field>
 
                     <v-text-field
-                      v-model="form.tanggal_jadwal"
-                      label="Schedule's Date"
-                      type="date"
-                      required>
-                    </v-text-field>
-
-                    <v-text-field
                       v-model="form.jam_mulai"
                       label="Start Time (hh:mm:ss)"
                       required>
@@ -342,7 +335,7 @@
                     <tbody>
                       <tr style="float: left;">Morning Class</tr>
                       <tr v-for="item in searchSchedule" :key="item.id_jadwal">
-                        <v-card class="ml-10 mt-2 mb-2" max-width="70%" elevation=5 v-if="item.sesi_jadwal == 0">
+                        <v-card class="ml-10 mt-2 mb-2" max-width="70%" elevation=5 v-if="item.sesi_jadwal == 0" @click="editJadwal(item)">
                         <v-card-text>
                           <p>{{ item.jam_mulai }}</p>
                           <p>{{ item.nama_kelas }}</p>
@@ -454,7 +447,6 @@
           id_kelas: null,
           id_instruktur: null,
           hari: null,
-          tanggal_jadwal: null,
           jam_mulai: null,
           sesi_jadwal: null,
           status: null,
@@ -646,18 +638,8 @@
           this.color = "error";
           this.snackbar = true;
           this.dialogConfirm = false;
-        } else if (this.form.tanggal_jadwal == null) {
-          this.message = "Date cannot be empty";
-          this.color = "error";
-          this.snackbar = true;
-          this.dialogConfirm = false;
         } else if (this.form.jam_mulai == null) {
           this.message = "Start Time cannot be empty";
-          this.color = "error";
-          this.snackbar = true;
-          this.dialogConfirm = false;
-        } else if (this.form.sesi_jadwal == null) {
-          this.message = "Session cannot be empty";
           this.color = "error";
           this.snackbar = true;
           this.dialogConfirm = false;
@@ -671,7 +653,6 @@
             id_kelas: this.form.id_kelas,
             id_instruktur: this.form.id_instruktur,
             hari: this.form.hari,
-            tanggal_jadwal: this.form.tanggal_jadwal,
             jam_mulai: this.form.jam_mulai,
             sesi_jadwal: this.form.sesi_jadwal,
             status: this.form.status,
@@ -702,6 +683,7 @@
                 this.getDataInstructur();
                 this.resetForm();
                 this.inputType = "Create";
+                this.dialogSearch = false;
                 this.dialogConfirm = false;
               })
               .catch((error) => {
@@ -757,7 +739,6 @@
         this.form.id_kelas = item.id_kelas;
         this.form.id_instruktur = item.id_instruktur;
         this.form.hari = item.hari;
-        this.form.tanggal_jadwal = item.tanggal_jadwal;
         this.form.jam_mulai = item.jam_mulai;
         this.form.sesi_jadwal = item.sesi_jadwal;
         this.form.status = item.status;
@@ -769,7 +750,6 @@
           id_kelas: null,
           id_instruktur: null,
           hari: null,
-          tanggal_jadwal: null,
           jam_mulai: null,
           sesi_jadwal: null,
           status: null,
@@ -795,7 +775,7 @@
 }
 @media screen {
   .v-data-table > .v-data-table__wrapper > table > tbody > tr:nth-child(odd) {
-    border-left: 6px solid #1428de;
+    border-left: 6px solid #8131c8;
   }
   .v-data-table > .v-data-table__wrapper > table > tbody > tr:nth-child(even) {
     border-left: 6px solid #ffffff;

@@ -47,7 +47,9 @@
           loading-text="Loading Data"
           no-data-text="No Data Available"
         >
-        
+        <template v-slot:[`item.total_deposit`]="{ item }">
+            <p> Rp. {{ formatNumber(item.total_deposit) }}</p>
+        </template>
         <template v-slot:expanded-item="{ headers, item }">
           <td :colspan="headers.length">
             <v-card :elevation = 5 class="mt-2 mb-2">
@@ -56,7 +58,7 @@
               </v-card-title>
               <v-container >
                 <p> Promo: {{ item.nama_promo }}</p>
-                <p> Deposit Mutation: <a style="color: seagreen;"> + {{ item.bonus_deposit + item.deposit }}</a>  </p>     
+                <p> Deposit Mutation: <a style="color: seagreen;"> + Rp. {{ formatNumber(item.bonus_deposit + item.deposit) }}</a>  </p>     
               </v-container>
             </v-card>
             </td>
@@ -100,16 +102,16 @@
             <p class="text--primary" style="float: left;"> {{ Printdata.id_member }} / {{ Printdata.nama_member}}</p>
           </v-row>
           <v-row class="mt-0">
-            <p class="text--primary">Deposit : {{Printdata.deposit }}</p>
+            <p class="text--primary">Deposit : Rp. {{ formatNumber(Printdata.deposit) }}</p>
           </v-row>
           <v-row class="mt-0">
-            <p class="text--primary">Bonus Deposit : {{ Printdata.bonus_deposit }}</p>
+            <p class="text--primary">Bonus Deposit : Rp. {{ formatNumber(Printdata.bonus_deposit) }}</p>
           </v-row>
           <v-row class="mt-0">
-            <p class="text--primary">Sisa deposit : {{ Printdata.sisa_deposit }}</p>
+            <p class="text--primary">Sisa deposit : Rp. {{ formatNumber(Printdata.sisa_deposit) }}</p>
           </v-row>
           <v-row class="mt-0">
-            <p class="text--primary">Total deposit : {{ Printdata.total_deposit }}</p>
+            <p class="text--primary">Total deposit : Rp. {{ formatNumber(Printdata.total_deposit) }}</p>
           </v-row>
           <v-row class="mt-0">
             <v-spacer></v-spacer>
@@ -124,10 +126,53 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog
+      fullscreen
+      v-model="printView"
+      persistent
+      transition="dialog-bottom-transition">
+      
+      <v-card class="center" style="padding: ;">
+        <v-card-text>
+          <v-row class="pt-5">
+            <p style="font-weight: bold;" class="text--primary">GoFit</p>
+            <v-spacer></v-spacer>
+            <p class="pr-16 text--primary">No Struk : {{ Printdata.no_struk }}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <p class="text--primary">Jl. Centralpark No.10 Yogyakarta</p>
+            <v-spacer></v-spacer>
+            <p class="text--primary">Tanggal : {{ Printdata.tanggal_transaksi }}</p>
+          </v-row>
+          <v-row>
+            <p style="font-weight: bold;" class="text--primary">Member :</p>
+            <p class="text--primary" style="float: left;"> {{ Printdata.id_member }} / {{ Printdata.nama_member}}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <p class="text--primary">Deposit : Rp. {{ formatNumber(Printdata.deposit) }}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <p class="text--primary">Bonus Deposit : Rp. {{ formatNumber(Printdata.bonus_deposit) }}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <p class="text--primary">Sisa deposit : Rp. {{ formatNumber(Printdata.sisa_deposit) }}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <p class="text--primary">Total deposit : Rp. {{ formatNumber(Printdata.total_deposit) }}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <v-spacer></v-spacer>
+            <p class="text--primary pr-16">Kasir : P{{ Printdata.id_kasir }}/{{ Printdata.nama_pegawai }}</p>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
     </v-main>
   </template>
   
   <script>
+  import numeral from 'numeral';
   export default {
     data() {
       return {
@@ -144,6 +189,7 @@
         message: "",
         dialog: false,
         printDialog: false,
+        printView: false,
         color: "",
         dialogConfirm: false,
         pegawai: [ {
@@ -199,6 +245,9 @@
     this.getDataMember();
     },
     methods: {
+      formatNumber(value){
+        return numeral(value).format('0,0.00');
+      },
       getDataTransaction() {
         this.load = true;
         var url = this.$api + "/depositReguler";
@@ -245,7 +294,14 @@
         this.dataprint.nama_pegawai = item.nama_pegawai;
       },
       windowPrint(){
-        window.print();
+        this.printDialog = false;
+        this.printView = true;
+        setTimeout(() => {
+          window.print();
+        }, 300);
+        setTimeout(() => {
+          this.printView = false;
+        }, 500);
       },
       cancel() {
         this.resetForm();

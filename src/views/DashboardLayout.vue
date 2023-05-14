@@ -157,6 +157,11 @@ export default {
           title: "Transaksi Deposit Kelas",
           to: "/deposit-kelas",
         },
+        {
+          icon: "mdi-email",
+          title: "Ijin Instruktur",
+          to: "/ijin-instruktur",
+        }
       ],
       kasir: [
       {
@@ -213,6 +218,11 @@ export default {
           title: "Jadwal Harian",
           to: "/jadwal-harian",
         },
+        {
+          icon: "mdi-email",
+          title: "Ijin Instruktur",
+          to: "/ijin-instruktur",
+        }
       ],
       mini: true,
     };

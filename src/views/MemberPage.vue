@@ -57,7 +57,7 @@
                 <p>Name: {{ item.nama_member }}</p>
                 <p>Address: {{ item.alamat_member }}</p>
                 <p>Phone Number: {{ item.no_telp }}</p>
-                <p>Deposit: {{ item.deposit_member }}</p>
+                <p>Deposit: Rp. {{ formatNumber(item.deposit_member) }}</p>
                 <p v-if="item.masa_berlaku == null">Masa Berlaku: -</p>
                 <p v-else>Active Until: {{ item.masa_berlaku }}</p>
                 <p>Email: {{ item.email_member }}</p>
@@ -201,6 +201,7 @@
 </template>
 
 <script>
+import numeral from 'numeral';
 export default {
   data() {
     return {
@@ -278,6 +279,9 @@ export default {
     this.getDataMember();
   },
   methods: {
+    formatNumber(value){
+        return numeral(value).format('0,0.00');
+      },
     setForm() {
       if (this.inputType !== "Create") {
         this.updateMember();
