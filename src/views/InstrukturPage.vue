@@ -47,7 +47,7 @@
                 <p>Email: {{ item.email_instruktur }}</p>
                 <p>Date of Birth: {{ item.tanggal_lahir }}</p>
                 <p>Username: {{ item.username }}</p>
-          
+                <p>Number of Absence: {{ item.jumlah_ijin }}</p>
               </v-container>
               
             </v-card>
@@ -194,6 +194,7 @@ export default {
       load: false,
       snackbar: false,
       instrukturs: [],
+      countIjin: 0,
       message: "",
       dialog: false,
       color: "",
@@ -255,7 +256,7 @@ export default {
     // },
     formatNumber(value){
         return numeral(value).format('0,0.00');
-      },
+    },
     setForm() {
       if (this.inputType !== "Create") {
         console.log(this.inputType);

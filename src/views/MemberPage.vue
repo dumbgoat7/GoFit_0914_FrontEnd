@@ -208,7 +208,6 @@ export default {
       deleteId: "",
       editId: "",
       inputType: "Create",
-      menu:[],
       expanded: [],
       search: null,
       load: false,
