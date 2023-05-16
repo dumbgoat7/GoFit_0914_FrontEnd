@@ -14,13 +14,23 @@
           <v-col>
             <v-text-field
               v-model="search"
-              append-icon="mdi-magnify"
-              label="Cari Data"
-              single-line
-              hide-details
-              outlined
+              dense filled rounded clearable placeholder="Search" 
+              prepend-inner-icon="mdi-magnify" 
+              class="pt-6 shrink expanding-search" 
+              :class="{ closed: searchBoxClosed && !search }" 
+              @focus="searchBoxClosed = false"
+              @blur="searchBoxClosed = true">
             ></v-text-field>
           </v-col>
+          <div class="ml-auto">
+            <v-btn
+              class="mt-9 mr-2"
+              color="#9155FD"
+              style="font-weight: bold; color: white"
+              @click="getExpired">
+              View Today's Reset
+            </v-btn>
+          </div>
         </div>
       </v-card>
       <v-card>
@@ -42,15 +52,20 @@
           <template v-slot:[`item.deposit_member`]="{ item }">
             <p> Rp. {{ formatNumber(item.deposit_member) }}</p>
           </template>
+          <template v-slot:[`item.deposit_kelas`]="{ item }">
+            <p> Rp. {{ formatNumber(item.deposit_kelas) }}</p>
+          </template>
 
           <template v-slot:[`item.actions`]="{ item }">
             <v-btn color="#AE8DC9" class="mr-2 white--text" @click="setDialogRegular(item)">
              Regular
             </v-btn>
-            <v-btn color="#9B84D0" class="mr-2 white--text" @click="setDialogKelas(item)">
+            <v-btn v-if="item.deposit_kelas != 0 " disabled color="#9B84D0" class="mr-2 white--text" @click="setDialogKelas(item)">
               Class
             </v-btn>
-            
+            <v-btn v-else color="#9B84D0" class="mr-2 white--text" @click="setDialogKelas(item)">
+              Class
+            </v-btn>
           </template>
   
         </v-data-table>
@@ -168,7 +183,6 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      
 
       <v-dialog 
       v-model="dialogConfirm" 
@@ -203,12 +217,11 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn text color="red" @click="dialogConfirmDepoKelas = false"> Cancel </v-btn>
-            <v-btn v="" text color="#9155FD" @click="submitDepoKelas"> Save </v-btn>
+            <v-btn text color="#9155FD" @click="submitDepoKelas"> Save </v-btn>
 
           </v-card-actions>
         </v-card>
       </v-dialog>
-      
 
       <v-snackbar v-model="snackbar" :color="color" bottom
         >{{ message }}
@@ -218,6 +231,49 @@
           </v-btn>
         </template>
       </v-snackbar>
+
+      <v-dialog
+      max-width="70%"
+      v-model="dialogResetedData"
+      persistent
+      transition="dialog-bottom-transition">
+      <v-card class="center" >
+        <v-card-title>
+          <div >
+            <span class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 border-bottom">Today Deactivated Members</span>
+          </div>
+        </v-card-title>
+        <hr/>
+        <v-card-text>
+          <v-simple-table>
+            <template v-slot:default>
+              <thead>
+                <tr>
+                  <th class="text-left">Id Number</th>
+                  <th class="text-left">Member's Name</th>
+                  <th class="text-left">Class's Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in reset" :key="item.no_struk">
+                  <td class="text-left">{{ item.no_struk }}</td>
+                  <td class="text-left">{{ item.nama_member }}</td>
+                  <td class="text-left">{{ item.nama_kelas }}</td>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+          
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text @click="dialogResetedData = false">
+              Cancel
+            </v-btn>
+          </v-card-actions>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
     </v-main>
   </template>
   
@@ -226,7 +282,7 @@
   export default {
     data() {
       return {
-        deleteId: "",
+        searchBoxClosed: true,
         editId: "",
         inputType: "Regular",
         expanded: [],
@@ -236,11 +292,13 @@
         members: [],
         transactions: [],
         kelas: [],
+        reset: [],
         transaction: new FormData(),
         message: "",
         dialog: false,
         dialogKelas: false,
         dialogConfirmDepoKelas: false,
+        dialogResetedData: false,
         color: "",
         dialogConfirm: false,
         jumlahDepositKelas: [
@@ -287,6 +345,10 @@
         {
           text: "Deposit Balance",
           value: "deposit_member",
+        },
+        {
+          text: "Class Deposit",
+          value: "deposit_kelas",
         },
         {
           text: "Action",
@@ -475,6 +537,21 @@
                 this.load = false;
             });
         }
+      },
+      getExpired(){
+        this.load = true;
+        var url = this.$api + "/showExpired";
+        this.$http
+          .get(url, {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          })
+          .then((response) => {
+            this.reset = response.data.data;
+            this.load = false;
+            this.dialogResetedData = true;
+          });
       },
       cancel() {
         this.resetForm();

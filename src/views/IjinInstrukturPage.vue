@@ -3,7 +3,7 @@
         <div
           class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 mb-3 border-bottom">
           <v-icon>mdi-chevron-right</v-icon>
-          <h3 class="h2">Instructur Absense Request List</h3>
+          <h3 class="h2">Instructur Absence Request List</h3>
       </div>
       <v-card>
         <div class="mb-10" style="display: flex">
@@ -34,7 +34,7 @@
 
       <v-card>
         <v-card-title>
-          List Data of Instructur Absense Request
+          List Data of Instructur Absence Request
         </v-card-title>
         <v-data-table
           :headers="headers"
@@ -48,10 +48,10 @@
           no-data-text="No Data Available"
         >
         <template v-slot:[`item.actions`]="{ item }">
-           <v-btn v-if="item.status == 1" @click="confirm(item.id)" disabled>
+           <v-btn v-if="item.status == 1" @click="confirm(item)" disabled>
             Confirm
            </v-btn>
-           <v-btn v-else @click="confirm(item.id)">
+           <v-btn v-else @click="confirm(item)">
             Confirm
            </v-btn>
            
@@ -67,7 +67,7 @@
                 <p>Name: {{ item.nama_instruktur }}</p>
                 <p>Request created on: {{ item.tanggal_pembuatan_ijin }}</p>
                 <p>Substitute Instructur: {{ item.nama_instruktur_pengganti }}</p>
-                <p>Absense on: {{ item.tanggal_ijin }}</p>
+                <p>Absence on: {{ item.tanggal_ijin }}</p>
                 <p>Description: {{ item.keterangan }}</p>
                 <p v-if="item.status == 1">Status: Confirmed</p>
                 <p v-else>Status: Not yet Confirmed</p>
@@ -78,6 +78,65 @@
         </template>
         </v-data-table>
       </v-card>
+
+      <v-dialog
+            max-width="70%"
+            v-model="dialogData"
+            persistent
+            transition="dialog-bottom-transition">
+            <v-card class="center" >
+              <v-card-title>
+                <div >
+                  <span class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 border-bottom"> Confirm Absence Request</span>
+                </div>
+              </v-card-title>
+              <hr/>
+              <v-card-text>
+                <v-container>
+                  <v-text-field
+                  v-model="form.nama_instruktur"
+                  label="Instructur's Name"
+                  disabled>
+                  </v-text-field>
+
+                  <v-text-field
+                    v-model="form.nama_instruktur_pengganti"
+                    label="Substitute Instructur's Name"
+                    disabled>
+                  </v-text-field>
+
+                  <v-text-field
+                    v-model="form.tanggal_pembuatan_ijin"
+                    label="Request Created on"
+                    disabled>
+                  </v-text-field>
+                  
+                  <v-text-field
+                    v-model="form.tanggal_ijin"
+                    label="Absence on"
+                    disabled>
+                  </v-text-field>
+
+                  <v-text-field
+                  v-model="form.keterangan"
+                  label="Description"
+                  disabled>
+                  </v-text-field>
+
+                </v-container>
+                <v-card-actions>
+                  <v-btn text @click="cancel">
+                    Cancel
+                  </v-btn>
+                  <v-spacer></v-spacer>
+                    <v-btn style="margin-left: 15px" @click="dialogConfirm = true">
+                      Confirm
+                    </v-btn>
+                </v-card-actions>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
+
 
       <v-dialog v-model="dialogConfirm" persistent max-width="300px">
       <v-card style="border-radius: 15px;">
@@ -121,6 +180,13 @@ export default {
       id: "",
       color: "",
       searchBoxClosed: true, 
+      form:{
+        nama_instruktur: "",
+        tanggal_pembuatan_ijin: "",
+        tanggal_ijin: "",
+        nama_instruktur_pengganti: "",
+        keterangan: "",
+      },
       headers: [
         {
           text: "Id Number",
@@ -139,6 +205,7 @@ export default {
   },
   mounted() {
     this.getDataIjin();
+    
   },
   methods:{
     getDataIjin(){
@@ -156,10 +223,15 @@ export default {
         });
       this.load = true;
     },
-    confirm(id){
-      this.dialogConfirm = true;
-      console.log(id);
-      this.id = id;
+    confirm(item){
+      this.dialogData = true;
+      console.log(item);
+      this.id = item.id;
+      this.form.nama_instruktur = item.nama_instruktur;
+      this.form.tanggal_pembuatan_ijin = item.tanggal_pembuatan_ijin;
+      this.form.tanggal_ijin = item.tanggal_ijin;
+      this.form.nama_instruktur_pengganti = item.nama_instruktur_pengganti;
+      this.form.keterangan = item.keterangan;
     },
     changeStatus(){
       this.load = true;
@@ -186,8 +258,48 @@ export default {
           localStorage.removeItem("token");
           this.load = false;
         });
-    }
-    }
+    },
+    cancel() {
+        this.resetForm();
+        this.dialog = false;
+        this.inputType = "Create";
+        this.dialogData = false;
+        this.searchText = null;
+      },
+      resetForm() {
+        this.form = {
+          nama_instruktur: null,
+          tanggal_pembuatan_ijin: null,
+          tanggal_ijin: null,
+          nama_instruktur_pengganti: null,
+          keterangan: null,
+        };
+    },
+  }
   }
 
 </script>
+
+<style scoped>
+  .center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 15px;
+  }
+  </style>
+  
+  <style>
+  #app {
+    margin-top: -10px;
+    background-color: #ffffff;
+  }
+  @media screen {
+    .v-data-table > .v-data-table__wrapper > table > tbody > tr:nth-child(odd) {
+      border-left: 6px solid #1428de;
+    }
+    .v-data-table > .v-data-table__wrapper > table > tbody > tr:nth-child(even) {
+      border-left: 6px solid #ffffff;
+    }
+  }
+  </style>

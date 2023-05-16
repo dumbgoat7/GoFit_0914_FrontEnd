@@ -13,16 +13,26 @@
         <div class="mb-10" style="display: flex">
           <v-col>
             <v-text-field
-              v-model="search"
-              append-icon="mdi-magnify"
-              label="Cari Data"
-              single-line
-              hide-details
-              outlined
+              dense filled rounded clearable placeholder="Search" 
+              prepend-inner-icon="mdi-magnify" 
+              class="pt-6 shrink expanding-search" 
+              :class="{ closed: searchBoxClosed && !search }"
+              @focus="searchBoxClosed = false"
+              @blur="searchBoxClosed = true">
             ></v-text-field>
           </v-col>
+          <div class="ml-auto">
+            <v-btn
+              class="mt-9 mr-2 pt-5 pb-5"
+              color="#9155FD"
+              style="font-weight: bold; color: white"
+              @click="getDeactiveMember">
+              Today's Deactivated <br> Member
+            </v-btn>
+          </div>
         </div>
       </v-card>
+
       <v-card>
         <v-card-title>
           Member's Activitation Transaction
@@ -42,7 +52,10 @@
             <v-btn v-else color="#AE8DC9" class="mr-2 white--text" @click="activate(item)">
              Activate
             </v-btn>
-            <v-btn color="#9B84D0" class="mr-2 white--text" @click="btnDeactive(item.id_member)">
+            <v-btn v-if="item.status == 0" disabled color="#9B84D0" class="mr-2 white--text" @click="btnDeactive(item.id_member)">
+              Deactive
+            </v-btn>
+            <v-btn v-else color="#9B84D0" class="mr-2 white--text" @click="btnDeactive(item.id_member)">
               Deactive
             </v-btn>
             <!-- <v-btn color="#8753DE" class="mr-2 white--text" @click="resetPassword(item)">
@@ -117,6 +130,48 @@
         </v-card>
       </v-dialog>
       
+      <v-dialog
+            max-width="70%"
+            v-model="dialogDeactiveMember"
+            persistent
+            transition="dialog-bottom-transition">
+            <v-card class="center" >
+              <v-card-title>
+                <div >
+                  <span class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 border-bottom">Today Deactivated Members</span>
+                </div>
+              </v-card-title>
+              <hr/>
+              <v-card-text>
+                <v-simple-table>
+                  <template v-slot:default>
+                    <thead>
+                      <tr>
+                        <th class="text-left">Member's Name</th>
+                        <th class="text-left">Email</th>
+                        <th class="text-left">Active Until</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="item in deactiveMembers" :key="item.id_member">
+                        <td class="text-left">{{ item.id_member }}</td>
+                        <td class="text-left">{{ item.nama_member }}</td>
+                        <td class="text-left">{{ item.masa_berlaku }}</td>
+                      </tr>
+                    </tbody>
+                  </template>
+                </v-simple-table>
+                
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn text @click="cancel">
+                    Cancel
+                  </v-btn>
+                </v-card-actions>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
+
       <v-dialog 
       v-model="dialogConfirm" 
       persistent 
@@ -152,21 +207,22 @@
   export default {
     data() {
       return {
-        deleteId: "",
         editId: "",
         inputType: "Activate",
         expanded: [],
         search: null,
+        searchBoxClosed: true,
         load: false,
         snackbar: false,
         members: [],
+        deactiveMembers: [],
         transactions: [],
         transaction: new FormData(),
         message: "",
         dialog: false,
         color: "",
         dialogConfirm: false,
-        
+        dialogDeactiveMember: false,
         pegawai: [ {
             id_kasir: localStorage.getItem("id_pegawai"),
             nama_kasir: localStorage.getItem("nama_pegawai"),
@@ -293,19 +349,15 @@
         }
       },
         btnDeactive(id_member) {
-        this.deleteId = id_member;
+        this.editId = id_member;
         this.inputType = "Deactive";
         this.dialogConfirm = true;
       },
         deactiveMember() {
-            let newData = {
-                status_member: 0,
-                masa_berlaku: null,
-            }; 
             this.load = true;
-            var url = this.$api + "/member/deactiveMember/" + this.deleteId;
+            var url = this.$api + "/member/deactiveMember/" + this.editId;
             this.$http
-            .put(url, newData, {
+            .put(url, null, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),
           },
@@ -327,9 +379,28 @@
           this.load = false;
         });
       },
+      getDeactiveMember(){
+        this.load = true;
+        var url = this.$api + "/showDeactiveMember";
+        this.$http
+          .get(url, {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          })
+          .then((response) => {
+            this.deactiveMembers = response.data.data;
+            console.log(this.deactiveMembers);
+            this.dialogDeactiveMember = true;
+            this.load = false;
+          });
+        this.load = true;
+      },
       cancel() {
         this.resetForm();
         this.dialog = false;
+        this.dialogConfirm = false;
+        this.dialogDeactiveMember = false;
         this.inputType = "Activate";
         this.getDataTransaction();
       },

@@ -307,7 +307,7 @@
                   <v-btn text v-if="formTitle == 'Create'" style="margin-left: 15px" @click="dialogConfirm = true">
                       Save
                     </v-btn>
-                    <v-btn text v-else-if="formTitle == 'Update'" tyle="margin-left: 15px" @click="dialogConfirm = true">
+                    <v-btn text v-else-if="formTitle == 'Update'" style="margin-left: 15px" @click="dialogConfirm = true">
                       Save
                     </v-btn>
                 </v-card-actions>

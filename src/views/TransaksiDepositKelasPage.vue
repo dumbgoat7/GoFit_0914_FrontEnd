@@ -46,7 +46,10 @@
         >
         <template v-slot:[`item.actions`]="{ item }">
            <v-icon color="black" @click="print(item)">mdi-printer</v-icon>
+
+            <v-icon class="ml-5" color="black" @click="SetDialogReset(item)">mdi-refresh</v-icon>
         </template>
+
         <template v-slot:[`item.deposit`]="{ item }">
             <p> Rp. {{ formatNumber(item.deposit) }}</p>
         </template>
@@ -109,6 +112,67 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog
+      fullscreen
+      v-model="printView"
+      persistent
+      transition="dialog-bottom-transition">
+      
+      <v-card class="center" style="padding: ;">
+        <v-card-text>
+          <v-row class="pt-5">
+            <p style="font-weight: bold;" class="text--primary">GoFit</p>
+            <v-spacer></v-spacer>
+            <p class="pr-16 text--primary">No Struk : {{ Printdata.no_struk }}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <p class="text--primary">Jl. Centralpark No.10 Yogyakarta</p>
+            <v-spacer></v-spacer>
+            <p class="text--primary">Tanggal : {{ Printdata.tanggal_transaksi }}</p>
+          </v-row>
+          <v-row>
+            <p style="font-weight: bold;" class="text--primary">Member :</p>
+            <p class="text--primary" style="float: left;"> {{ Printdata.id_member }} / {{ Printdata.nama_member}}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <p class="text--primary">Deposit : Rp. {{ formatNumber(Printdata.deposit) }}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <p class="text--primary">Jenis Kelas : {{ Printdata.nama_kelas }}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <p class="text--primary">Total Deposit {{ Printdata.nama_kelas }} : {{ Printdata.deposit_kelas }}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <p class="text--primary">Masa Berlaku : {{ Printdata.masa_berlaku }}</p>
+          </v-row>
+          <v-row class="mt-0">
+            <v-spacer></v-spacer>
+            <p class="text--primary pr-16">Kasir : P{{ Printdata.id_kasir }}/{{ Printdata.nama_pegawai }}</p>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog 
+      v-model="dialogConfirm" 
+      persistent 
+      max-width="300px">
+        <v-card style="border-radius: 15px;">
+          <v-card-title class="pa-0">
+            <v-toolbar color="#B18CEF" elevation="0" height="70%">
+              <span style="color: white; font-family: Poppins; font-weight: 800; font-size: 160%; margin: auto;">Alert!</span>   
+            </v-toolbar>
+          </v-card-title>
+          <v-card-text class="mt-5" style="color:black" > Are you sure to reset this class deposit? </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text color="red" @click="dialogConfirm = false"> Cancel </v-btn>
+            <v-btn text color="#9155FD" @click="resetDeposit"> Yes </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
     </v-main>
   </template>
   
@@ -122,12 +186,14 @@
         inputType: "Create",
         expanded: [],
         printDialog: false,
+        printView: false,
         search: null,
         searchBoxClosed: true,
         load: false,
         snackbar: false,
         members: [],
         transactions: [],
+        reset: [],
         transaction: new FormData(),
         message: "",
         dialog: false,
@@ -188,7 +254,7 @@
         return this.inputType;
       },
       Printdata() {
-        console.log(this.dataprint);
+        // console.log(this.dataprint);
         return this.dataprint;
       },
     },
@@ -211,7 +277,7 @@
           })
           .then((response) => {
             this.transactions = response.data.data;
-            console.log(this.transactions);
+            // console.log(this.transactions);
             this.load = false;
           });
         this.load = true;
@@ -231,8 +297,39 @@
           });
         this.load = true;
       },
+      SetDialogReset(item){
+        this.editId = item.no_struk;
+        this.dialogConfirm = true;
+      },
+      resetDeposit(){
+        this.load = true;
+        var url = this.$api + "/resetDeposit/" + this.editId;
+        this.$http
+            .put(url, null, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        })
+        .then((response) => {
+          this.message = response.data.message;
+          this.color = "success";
+          this.snackbar = true;
+          this.getDataTransaction();
+          this.dialogConfirm = false;
+          this.reset = response.data.data;
+          console.log(this.reset);
+          this.load = false;
+        })
+        .catch((error) => {
+          this.message = error.response.data.message;
+          this.color = "error";
+          this.snackbar = true;
+          this.load = false;
+          this.dialogConfirm = false;
+        });
+      },
       print(item){
-        console.log(item);
+        // console.log(item);
         this.printDialog = true;
         this.dataprint.no_struk = item.no_struk;
         this.dataprint.id_member = item.id_member;
