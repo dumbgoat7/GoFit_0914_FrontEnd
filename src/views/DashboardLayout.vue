@@ -124,17 +124,17 @@ export default {
         },
         {
           icon: "mdi-calendar-blank",
-          title: "Jadwal",
+          title: "Schedule",
           to: "/jadwal",
         },
         {
           icon: "mdi-calendar-blank",
-          title: "Jadwal Harian",
+          title: "Daily Schedule",
           to: "/jadwal-harian",
         },
         {
           icon: "mdi-human-male-board",
-          title: "Instruktur",
+          title: "Instructur",
           to: "/instruktur",
         },
         {
@@ -144,22 +144,22 @@ export default {
         },
         {
           icon: "mdi-cash-100",
-          title: "Transaksi Aktivasi",
+          title: "Activation Transaction",
           to: "/aktivasi",
         },
         {
           icon: "mdi-cash",
-          title: "Transaksi Deposit Reguler",
+          title: "Regular Deposit Transaction",
           to: "/deposit-reguler",
         },
         {
           icon: "mdi-cash-multiple",
-          title: "Transaksi Deposit Kelas",
+          title: "Class Deposit Transaction",
           to: "/deposit-kelas",
         },
         {
           icon: "mdi-email",
-          title: "Ijin Instruktur",
+          title: "Instructur Absense Request",
           to: "/ijin-instruktur",
         }
       ],
@@ -176,17 +176,17 @@ export default {
         },
         {
           icon: "mdi-cash-100",
-          title: "Transaksi Aktivasi",
+          title: "Activation Transaction",
           to: "/aktivasi",
         },
         {
           icon: "mdi-cash",
-          title: "Transaksi Deposit Reguler",
+          title: "Regular Deposit Transaction",
           to: "/deposit-reguler",
         },
         {
           icon: "mdi-cash-multiple",
-          title: "Transaksi Deposit Kelas",
+          title: "Class Deposit Transaction",
           to: "/deposit-kelas",
         },
       ],
@@ -198,7 +198,7 @@ export default {
         },
         {
           icon: "mdi-human-male-board",
-          title: "Instruktur",
+          title: "Instructur",
           to: "/instruktur",
         },
       ],
@@ -210,17 +210,17 @@ export default {
         },
         {
           icon: "mdi-calendar-blank",
-          title: "Jadwal",
+          title: "Schedule",
           to: "/jadwal",
         },
         {
           icon: "mdi-calendar-blank",
-          title: "Jadwal Harian",
+          title: "Daily Schedule",
           to: "/jadwal-harian",
         },
         {
           icon: "mdi-email",
-          title: "Ijin Instruktur",
+          title: "Instructur Absense Request",
           to: "/ijin-instruktur",
         }
       ],

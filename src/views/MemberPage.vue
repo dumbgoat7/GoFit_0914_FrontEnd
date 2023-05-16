@@ -7,6 +7,31 @@
     </div>
     
     <v-card>
+        <div class="mb-10" style="display: flex">
+          <v-col>
+            <v-text-field
+              v-model="search"
+              dense filled rounded clearable placeholder="Search" 
+              prepend-inner-icon="mdi-magnify" 
+              class="pt-6 shrink expanding-search" 
+              :class="{ closed: searchBoxClosed && !search }" 
+              @focus="searchBoxClosed = false"
+              @blur="searchBoxClosed = true">
+            ></v-text-field>
+          </v-col>
+          <div class="ml-auto">
+            <v-btn
+              class="mt-9 mr-2"
+              color="#9155FD"
+              style="font-weight: bold; color: white"
+              @click="dialog = true">
+              Add Data
+            </v-btn>
+          </div>
+        </div>
+      </v-card>
+
+    <v-card>
       <v-card-title>
         List Data of Member
       </v-card-title>
@@ -58,6 +83,7 @@
                 <p>Address: {{ item.alamat_member }}</p>
                 <p>Phone Number: {{ item.no_telp }}</p>
                 <p>Deposit: Rp. {{ formatNumber(item.deposit_member) }}</p>
+                <p>Class Deposit: Rp. {{ formatNumber(item.deposit_kelas) }}</p>
                 <p v-if="item.masa_berlaku == null">Masa Berlaku: -</p>
                 <p v-else>Active Until: {{ item.masa_berlaku }}</p>
                 <p>Email: {{ item.email_member }}</p>
@@ -70,29 +96,6 @@
             </td>
         </template>
       </v-data-table>
-    </v-card>
-    <v-card>
-      <div class="mb-10" style="display: flex">
-        <v-col>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Cari Data"
-            single-line
-            hide-details
-            outlined
-          ></v-text-field>
-        </v-col>
-        <div style="margin-top: 5px" class="ml-auto">
-          <v-btn
-            class="mx-2 mt-4 mb-4"
-            color="#9155FD"
-            style="font-weight: bold; color: white"
-            @click="dialog = true">
-            Add Data
-          </v-btn>
-        </div>
-      </div>
     </v-card>
 
 
@@ -126,8 +129,15 @@
               required
             ></v-text-field>
             <v-text-field
+              v-if="formTitle == 'Update'"
               v-model="form.deposit_member"
               label="Deposit"
+              required
+            ></v-text-field>
+            <v-text-field
+              v-if="formTitle == 'Update'"
+              v-model="form.deposit_kelas"
+              label="Class Deposit"
               required
             ></v-text-field>
             <v-text-field
@@ -222,7 +232,8 @@ export default {
         nama_member: "",
         alamat_member: "",
         no_telp: "",
-        deposit_member: "",
+        deposit_member: 0,
+        deposit_kelas: 0,
         email_member: "",
         tanggal_lahir: "",
         username: "",
@@ -329,10 +340,6 @@ export default {
         this.message = "Phone number cannot be less than 10 digits";
         this.color = "red";
         this.snackbar = true;
-      } else if (this.form.deposit_member == "") {
-        this.message = "Please fill in the deposit";
-        this.color = "red";
-        this.snackbar = true;
       } else if (this.form.deposit_member < 0) {
         this.message = "Deposit value cannot be less than 0";
         this.color = "red";
@@ -370,7 +377,6 @@ export default {
         formData.append("nama_member", this.form.nama_member);
         formData.append("alamat_member", this.form.alamat_member);
         formData.append("no_telp", this.form.no_telp);
-        formData.append("deposit_member", this.form.deposit_member);
         formData.append("email_member", this.form.email_member);
         formData.append("tanggal_lahir", this.form.tanggal_lahir);
         formData.append("username", this.form.username);
@@ -423,10 +429,26 @@ export default {
         this.message = "Phone number cannot be less than 10 digits";
         this.color = "red";
         this.snackbar = true;
+      } else if(this.form.deposit_member == "") {
+        this.message = "Please fill in the deposit";
+        this.color = "red";
+        this.snackbar = true;
       } else if (this.form.deposit_member < 0) {
         this.message = "Deposit value cannot be less than 0";
         this.color = "red";
         this.snackbar = true;  
+      } else if (isNaN(this.form.deposit_member)) {
+        this.message = "Deposit must be numeric";
+        this.color = "red";
+        this.snackbar = true;
+      } else if (this.form.deposit_kelas < 0) {
+        this.message = "Deposit value cannot be less than 0";
+        this.color = "red";
+        this.snackbar = true;  
+      } else if (isNaN(this.form.deposit_kelas)) {
+        this.message = "Deposit must be numeric";
+        this.color = "red";
+        this.snackbar = true;
       } else if (this.form.email_member == "") {
         this.message = "Please fill in the email";
         this.color = "red";
@@ -445,6 +467,7 @@ export default {
         no_telp: this.form.no_telp,
         alamat_member: this.form.alamat_member,
         deposit_member: this.form.deposit_member,
+        deposit_kelas: this.form.deposit_kelas,
         email_member: this.form.email_member,
         tanggal_lahir: this.form.tanggal_lahir,
       };
@@ -515,6 +538,7 @@ export default {
       this.form.no_telp = item.no_telp;
       this.form.alamat_member = item.alamat_member;
       this.form.deposit_member = item.deposit_member;
+      this.form.deposit_kelas = item.deposit_kelas;
       this.form.masa_berlaku = item.masa_berlaku;
       this.form.email_member = item.email_member;
       this.form.tanggal_lahir = item.tanggal_lahir;
