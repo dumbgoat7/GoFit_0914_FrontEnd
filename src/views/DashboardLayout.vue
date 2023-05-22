@@ -161,6 +161,16 @@ export default {
           icon: "mdi-email",
           title: "Instructur Absense Request",
           to: "/ijin-instruktur",
+        },
+        {
+          icon: "mdi-email",
+          title: "Booking Gym",
+          to: "/booking-gym",
+        },
+        {
+          icon: "mdi-email",
+          title: "Booking Class",
+          to: "/booking-kelas",
         }
       ],
       kasir: [
@@ -189,6 +199,16 @@ export default {
           title: "Class Deposit Transaction",
           to: "/deposit-kelas",
         },
+        {
+          icon: "mdi-email",
+          title: "Booking Gym",
+          to: "/booking-gym",
+        },
+        {
+          icon: "mdi-email",
+          title: "Booking Class",
+          to: "/booking-kelas",
+        }
       ],
       admin: [
         {

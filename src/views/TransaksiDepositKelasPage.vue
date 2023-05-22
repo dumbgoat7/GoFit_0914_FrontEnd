@@ -392,5 +392,15 @@
       border-left: 6px solid #ffffff;
     }
   }
+
+@media print {
+
+html, body {
+  height:100%; 
+  margin: 0 !important; 
+  padding: 0 !important;
+  overflow: hidden;
+}
+}
   </style>
   

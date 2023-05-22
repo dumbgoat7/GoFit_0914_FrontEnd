@@ -95,6 +95,24 @@ const router = new VueRouter({
               name: 'ijinInstruktur',
               meta: {title : 'ijinInstruktur'},
               component: importViewComponent('IjinInstrukturPage'),
+            },
+            {
+              path:'/booking-gym',
+              name:'bookingGym',
+              meta: {title : 'bookingGym'},
+              component: importViewComponent('BookingGymPage'),
+            },
+            {
+              path:'/booking-kelas',
+              name:'bookingKelas',
+              meta: {title : 'bookingKelas'},
+              component: importViewComponent('BookingKelasPage'),
+            },
+            {
+              path:'/presensi-gym',
+              name:'presensiGym',
+              meta: {title : 'presensiGym'},
+              component: importViewComponent('PresensiGymPage'),
             }
           ]
     },

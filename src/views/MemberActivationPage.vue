@@ -13,6 +13,7 @@
         <div class="mb-10" style="display: flex">
           <v-col>
             <v-text-field
+              v-model="search"
               dense filled rounded clearable placeholder="Search" 
               prepend-inner-icon="mdi-magnify" 
               class="pt-6 shrink expanding-search" 
@@ -373,7 +374,7 @@
           this.inputType = "Activate";
         })
         .catch((error) => {
-          this.message = error;
+          this.message = error.response.data.message;
           this.color = "red";
           this.snackbar = true;
           this.load = false;

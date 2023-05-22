@@ -5,6 +5,31 @@
         <v-icon>mdi-chevron-right</v-icon>
         <h3 class="h2">Instructur</h3>
     </div>
+    <v-card>
+      <div class="mb-10" style="display: flex">
+        <v-col>
+          <v-text-field
+              v-model="search"
+              dense filled rounded clearable placeholder="Search" 
+              prepend-inner-icon="mdi-magnify" 
+              class="pt-6 shrink expanding-search" 
+              :class="{ closed: searchBoxClosed && !search }" 
+              @focus="searchBoxClosed = false"
+              @blur="searchBoxClosed = true">
+            ></v-text-field>
+        </v-col>
+        <div class="ml-auto">
+            <v-btn
+              class="mt-9 mr-2"
+              color="#9155FD"
+              style="font-weight: bold; color: white"
+              @click="dialog = true">
+              Add Data
+            </v-btn>
+          </div>
+      </div>
+    </v-card>
+
     <v-card >
       <v-card-title>
         List Data of Instructur
@@ -56,29 +81,6 @@
       </v-data-table>
     </v-card>
 
-    <v-card>
-      <div class="mb-10" style="display: flex">
-        <v-col>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Cari Data"
-            single-line
-            hide-details
-            outlined
-          ></v-text-field>
-        </v-col>
-        <div style="margin-top: 5px" class="ml-auto">
-          <v-btn
-            class="mx-2 mt-4 mb-4"
-            color="#9155FD"
-            style="font-weight: bold; color: white"
-            @click="dialog = true">
-            Add Data
-          </v-btn>
-        </div>
-      </div>
-    </v-card>
 
 
     <v-dialog
@@ -138,7 +140,7 @@
             ></v-text-field>
           </v-container>
           <v-card-actions>
-            <v-btn text @click="cancel">
+            <v-btn color="red" text @click="cancel">
               Cancel
             </v-btn>
             <v-spacer></v-spacer>
@@ -191,6 +193,7 @@ export default {
       inputType: "Create",
       expanded: [],
       search: null,
+      searchBoxClosed: true,
       load: false,
       snackbar: false,
       instrukturs: [],

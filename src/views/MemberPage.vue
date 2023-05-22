@@ -227,6 +227,7 @@ export default {
       message: "",
       dialog: false,
       color: "",
+      searchBoxClosed: true,
       dialogConfirm: false,
       form: {
         nama_member: "",

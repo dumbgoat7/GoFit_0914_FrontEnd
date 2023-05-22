@@ -289,7 +289,7 @@ import numeral from 'numeral'
       border-left: 6px solid #ffffff;
     }
   }
-  @media print {
+@media print {
 
   html, body {
     height:100%; 
