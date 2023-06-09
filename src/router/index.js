@@ -23,6 +23,12 @@ const router = new VueRouter({
         children: [
             //Dashboard
             {
+                path: '/laporanGym',
+                name: 'laporanGym',
+                meta: {title : 'laporan gym'},
+                component: importViewComponent('LaporanGym'),
+            },
+            {
                 path: '/dashboard',
                 name: 'dashboard',
                 meta: {title : 'dashboard'},

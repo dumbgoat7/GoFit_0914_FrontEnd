@@ -171,6 +171,11 @@ export default {
           icon: "mdi-email",
           title: "Booking Class",
           to: "/booking-kelas",
+        },
+        {
+          icon: "mdi-email",
+          title: "Laporan Gym",
+          to: "/laporanGym",
         }
       ],
       kasir: [
@@ -242,6 +247,11 @@ export default {
           icon: "mdi-email",
           title: "Instructur Absense Request",
           to: "/ijin-instruktur",
+        },
+        {
+          icon: "mdi-email",
+          title: "Laporan Gym",
+          to: "/laporanGym",
         }
       ],
       mini: true,

@@ -550,7 +550,13 @@
           .then((response) => {
             this.reset = response.data.data;
             this.load = false;
-            this.dialogResetedData = true;
+            if(this.reset == null){
+              this.message = "No data expired today";
+              this.color = "error";
+              this.snackbar = true;
+            } else {
+              this.dialogResetedData = true;
+            }
           });
       },
       cancel() {
