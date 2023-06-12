@@ -253,26 +253,57 @@
                       item-text="nama_instruktur"
                       required
                   ></v-select>
-                  <v-text-field
+                  <v-select
+                      :items="hari"
                       v-model="form.hari"
                       label="Schedule's Day"
                       required>
-                    </v-text-field>
-
-                    <v-text-field
-                      v-model="form.jam_mulai"
-                      label="Start Time (hh:mm:ss)"
-                      required>
-                    </v-text-field>
-
-                    <v-select
-                    :items="sesi"
-                    v-model="form.sesi_jadwal"
-                    label="Session"
-                    item-value="value"
-                    item-text="text"
-                    required> 
                     </v-select>
+
+                    <v-menu
+                      ref="menu"
+                      v-model="menu2"
+                      :close-on-content-click="false"
+                      :nudge-right="40"
+                      :return-value.sync="form.jam_mulai"
+                      transition="scale-transition"
+                      offset-y
+                      max-width="290px"
+                      min-width="290px"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                          v-model="form.jam_mulai"
+                          label="Picker in menu"
+                          readonly
+                          v-bind="attrs"
+                          v-on="on"
+                        ></v-text-field>
+                      </template>
+                      <v-time-picker
+                        v-if="menu2"
+                        v-model="form.jam_mulai"
+                        full-width
+                        use-seconds
+                      >
+                        <v-btn
+                          text
+                          color="primary"
+                          @click="menu2 = false"
+                        >
+                          Cancel
+                        </v-btn>
+                        <v-spacer></v-spacer>
+                        
+                        <v-btn
+                          text
+                          color="primary"
+                          @click="$refs.menu.save(form.jam_mulai)"
+                        >
+                          OK
+                        </v-btn>
+                    </v-time-picker>
+                    </v-menu>
 
                 </v-container>
                 <v-card-actions>
@@ -292,25 +323,25 @@
           </v-dialog>
           
           <v-dialog 
-    v-model="dialogConfirm" 
-    persistent 
-    max-width="300px">
-      <v-card style="border-radius: 15px;">
-        <v-card-title class="pa-0">
-          <v-toolbar color="#B18CEF" elevation="0" height="80%">
-            <span style="color: white; font-family: Poppins; font-weight: 800; font-size: 160%; margin: auto;">Alert!</span>   
-          </v-toolbar>
-        </v-card-title>
-        <v-card-text class="mt-5" style="font-weight: 500;"> Are you sure to {{ formTitle }} this data? </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn text color="red" @click="dialogConfirm = false"> Cancel </v-btn>
-          <v-btn text v-if="formTitle == 'Create'" color="#9155FD" @click="submit"> Create </v-btn>
-          <v-btn text v-else-if="formTitle == 'Update'" color="#9155FD" @click="update"> Update </v-btn>
-          <v-btn text v-else color="#9155FD" @click="deleteData"> Delete </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+          v-model="dialogConfirm" 
+          persistent 
+          max-width="300px">
+            <v-card style="border-radius: 15px;">
+              <v-card-title class="pa-0">
+                <v-toolbar color="#B18CEF" elevation="0" height="80%">
+                  <span style="color: white; font-family: Poppins; font-weight: 800; font-size: 160%; margin: auto;">Alert!</span>   
+                </v-toolbar>
+              </v-card-title>
+              <v-card-text class="mt-5" style="font-weight: 500;"> Are you sure to {{ formTitle }} this data? </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn text color="red" @click="dialogConfirm = false"> Cancel </v-btn>
+                <v-btn text v-if="formTitle == 'Create'" color="#9155FD" @click="submit"> Create </v-btn>
+                <v-btn text v-else-if="formTitle == 'Update'" color="#9155FD" @click="update"> Update </v-btn>
+                <v-btn text v-else color="#9155FD" @click="deleteData"> Delete </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
 
           <v-snackbar v-model="snackbar" :color="color" bottom
           >{{ message }}
@@ -333,9 +364,15 @@
         search: null,
         load: false,
         snackbar: false,
-        sesi: [
-          { text: "Morning", value: 0 },
-          { text: "Evening", value: 1 },
+        menu2: false,
+        hari:[
+          { text: "Monday", value: "Monday" },
+          { text: "Tuesday", value: "Tuesday" },
+          { text: "Wednesday", value: "Wednesday" },
+          { text: "Thursday", value: "Thursday" },
+          { text: "Friday", value: "Friday" },
+          { text: "Saturday", value: "Saturday" },
+          { text: "Sunday", value: "Sunday" },
         ],
         instructur: [],
         kelas: [],
@@ -364,7 +401,6 @@
           id_instruktur: null,
           hari: null,
           jam_mulai: null,
-          sesi_jadwal: null,
         },
       };
     },
@@ -556,18 +592,12 @@
           this.color = "error";
           this.snackbar = true;
           this.dialogConfirm = false;
-        } else if (this.form.sesi_jadwal == null) {
-          this.message = "Session cannot be empty";
-          this.color = "error";
-          this.snackbar = true;
-          this.dialogConfirm = false;
         } else {
           let formData = new FormData();
           formData.append("id_kelas", this.form.id_kelas);
           formData.append("id_instruktur", this.form.id_instruktur);
           formData.append("hari", this.form.hari);
           formData.append("jam_mulai", this.form.jam_mulai);
-          formData.append("sesi_jadwal", this.form.sesi_jadwal);
 
           this.load = true;
           var url = this.$api + "/jadwal";
@@ -603,7 +633,8 @@
             this.load = false;
           });
         }
-      },update() {
+      },
+      update() {
         if(this.form.id_kelas == null) {
           this.message = "Class's Name cannot be empty";
           this.color = "error";
@@ -624,18 +655,12 @@
           this.color = "error";
           this.snackbar = true;
           this.dialogConfirm = false;
-        } else if (this.form.sesi_jadwal == null) {
-          this.message = "Session cannot be empty";
-          this.color = "error";
-          this.snackbar = true;
-          this.dialogConfirm = false;
         } else {
           let newData = {
             id_kelas: this.form.id_kelas,
             id_instruktur: this.form.id_instruktur,
             hari: this.form.hari,
             jam_mulai: this.form.jam_mulai,
-            sesi_jadwal: this.form.sesi_jadwal,
           };
           var url = this.$api + "/jadwal/" + this.editId;
           this.load = true;
@@ -665,7 +690,7 @@
                 this.dialogConfirm = false;
               })
               .catch((error) => {
-                this.message = error;
+                this.message = error.response.data.message;
                 this.color = "red";
                 this.snackbar = true;
                 this.load = false;
@@ -681,7 +706,6 @@
         this.form.id_instruktur = item.id_instruktur;
         this.form.hari = item.hari;
         this.form.jam_mulai = item.jam_mulai;
-        this.form.sesi_jadwal = item.sesi_jadwal;
         this.dialog = true;
       },
       cancel() {
@@ -704,7 +728,6 @@
           id_instruktur: null,
           hari: null,
           jam_mulai: null,
-          sesi_jadwal: null,
         };
       },
     },

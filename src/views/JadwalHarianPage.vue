@@ -10,7 +10,7 @@
           <v-card-title>
             Timetables of GoFit
             <v-spacer></v-spacer>
-            <v-btn> Generate </v-btn>
+            <v-btn color="#9155FD" style="font-weight: bold; color: white" @click="generate" :disabled="isButtonDisabled"> Generate </v-btn>
           </v-card-title>
       </v-card>
           <v-text-field
@@ -412,10 +412,7 @@
         searchBoxClosed: true,
         load: false,
         snackbar: false,
-        column: [
-          { number : 1 },
-          { number: 2 }
-        ],
+        isButtonDisabled: false,
         sesi: [
           { text: "Morning", value: 0 },
           { text: "Evening", value: 1 },
@@ -755,6 +752,42 @@
           status: null,
         };
       },
+      generate() {
+        this.load = true;
+        var url = this.$api + "/generateJadwal";
+        this.$http
+          .post(url, this.transaction, {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          })
+          .then((response) => {
+            this.message = response.data.message;
+            this.color = "green";
+            this.snackbar = true;
+            this.load = false;
+            this.getDataScheduleMonday();
+            this.getDataScheduleTuesday();
+            this.getDataScheduleWednesday();
+            this.getDataScheduleThursday();
+            this.getDataScheduleFriday();
+            this.getDataScheduleSaturday();
+            this.getDataScheduleSunday();
+            this.getDataClass();
+            this.getDataInstructur();
+            this.resetForm();
+            this.inputType = "Create";
+            this.dialogSearch = false;
+            this.dialogConfirm = false;
+          })
+          .catch((error) => {
+            console.log(error);
+            this.message = error.response.data.message;
+            this.color = "red";
+            this.snackbar = true;
+            this.load = false;
+          });
+      }
     },
   };
 </script>

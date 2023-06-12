@@ -209,7 +209,8 @@ export default {
             this.totalMember = this.dataJadwal.reduce((total, row) => total + row.count, 0);
         },
         getDataJadwalGymBulanan() {
-            var url = this.$api + "/laporanGymThisMonth";
+            this.load = true;
+            var url = this.$api + "/laporanGym/" + this.selectedMonth;
             this.$http
             .get(url, {
               headers: {
@@ -220,6 +221,7 @@ export default {
               console.log(response);
               this.dataJadwal = response.data.data;
               this.calculateTotalMember();
+              this.load = false;
             })
         },
         searchByMonth() {
