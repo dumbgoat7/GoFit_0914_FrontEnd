@@ -4,9 +4,9 @@
           class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 mb-3 border-bottom">
           <v-icon>>mdi-chevron-right</v-icon>
 
-          <h3 class="h2"> Laporan</h3>
+          <h3 class="h2"> Reports</h3>
           <v-icon>mdi-chevron-right</v-icon>
-          <h3 class="h2">Laporan Gym</h3>
+          <h3 class="h2">Gym Monthly Reports</h3>
           
       </div>
       <v-card>
@@ -18,17 +18,14 @@
             label="Select Month"
             clearable
             ></v-select>
-            <v-btn color="#9155FD" style="font-weight: bold; color: white" @click="searchByMonth">Search</v-btn>
+            <v-btn color="#9155FD" style="font-weight: bold; color: white" @click="getdataLaporanGymBulanan">Search</v-btn>
             
           </v-col>
-          <div class="ml-auto">
-            
-          </div>
         </div>
       </v-card>
       <v-card>
         <v-card-title>
-          Laporan Gym
+          Gym Monthly Report
           <v-spacer></v-spacer>
           <v-btn
               color="#9155FD"
@@ -38,7 +35,7 @@
             </v-btn> 
         </v-card-title>
         
-            <v-data-table :headers="headers" :items="dataJadwal" :search="search" :loading="load"
+            <v-data-table :headers="headers" :items="dataLaporan" :loading="load"
                 loading-text="Sedang mengambil data" no-data-text="Tidak ada Data">
                 
             </v-data-table>
@@ -102,13 +99,13 @@ export default {
                     text: 'December',
                     value: '12'
                 },
-                ],
+            ],
             search: null,
             load: false,
             snackbar: false,
             totalMember: 0,
             deleteId: '',
-            dataJadwal: ref([]),
+            dataLaporan: ref([]),
             headers: [
                 {
                     text: 'Tanggal',
@@ -130,8 +127,9 @@ export default {
         }
     },
     mounted() {
-        this.getDataJadwalGymBulanan();
         this.selectedMonth = this.currentMonth.toString();
+        this.getdataLaporanGymBulanan();
+        
     },
     methods: {
         printTable() {
@@ -181,7 +179,7 @@ export default {
                   </tr>
               </thead>
               <tbody>
-                  ${this.dataJadwal.map(row => `
+                  ${this.dataLaporan.map(row => `
                       <tr>
                           <td>${row.tanggal}</td>
                           <td>${row.count}</td>
@@ -206,9 +204,9 @@ export default {
             }, 500);
         },
         calculateTotalMember() {
-            this.totalMember = this.dataJadwal.reduce((total, row) => total + row.count, 0);
+            this.totalMember = this.dataLaporan.reduce((total, row) => total + row.count, 0);
         },
-        getDataJadwalGymBulanan() {
+        getdataLaporanGymBulanan() {
             this.load = true;
             var url = this.$api + "/laporanGym/" + this.selectedMonth;
             this.$http
@@ -219,27 +217,11 @@ export default {
             })
             .then((response) => {
               console.log(response);
-              this.dataJadwal = response.data.data;
+              this.dataLaporan = response.data.data;
               this.calculateTotalMember();
               this.load = false;
             })
         },
-        searchByMonth() {
-            this.load = true;
-            var url = this.$api + "/laporanGym/" + this.selectedMonth;
-            this.$http
-            .get(url, {
-                headers: {
-                Authorization: "Bearer " + localStorage.getItem("token"),
-              },
-            })
-            .then((response) => {
-              console.log(response);
-              this.dataJadwal = response.data.data;
-              this.calculateTotalMember();
-              this.load = false;
-            })
-        }
     },
 };
 </script>

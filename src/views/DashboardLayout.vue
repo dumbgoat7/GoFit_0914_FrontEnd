@@ -174,8 +174,18 @@ export default {
         },
         {
           icon: "mdi-email",
-          title: "Laporan Gym",
+          title: "Gym Monthly Reports",
           to: "/laporanGym",
+        },
+        {
+          icon: "mdi-email",
+          title: "Gym Class Monthly Reports",
+          to: "/laporanKelas",
+        },
+        {
+          icon: "mdi-email",
+          title: "Annual Income Reports",
+          to: "/laporanPendapatan",
         }
       ],
       kasir: [
@@ -252,6 +262,11 @@ export default {
           icon: "mdi-email",
           title: "Laporan Gym",
           to: "/laporanGym",
+        },
+        {
+          icon: "mdi-email",
+          title: "Laporan Kelas",
+          to: "/laporanKelas",
         }
       ],
       mini: true,
