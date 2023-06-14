@@ -7,7 +7,7 @@ import Chart from 'chart.js/auto';
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios;
-Vue.prototype.$api = 'http://127.0.0.1:8000/api';
+Vue.prototype.$api = 'https://backend-raka.danielriq221.com/GoFit_0914/public/api';
 new Vue({
   vuetify,
   router,
