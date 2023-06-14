@@ -186,6 +186,11 @@ export default {
           icon: "mdi-email",
           title: "Annual Income Reports",
           to: "/laporanPendapatan",
+        },
+        {
+          icon: "mdi-email",
+          title: "Instructor Performance Reports",
+          to: "/laporanKinerja",
         }
       ],
       kasir: [
@@ -267,6 +272,11 @@ export default {
           icon: "mdi-email",
           title: "Laporan Kelas",
           to: "/laporanKelas",
+        },
+        {
+          icon: "mdi-email",
+          title: "Instructor Performance Reports",
+          to: "/laporanKinerja",
         }
       ],
       mini: true,

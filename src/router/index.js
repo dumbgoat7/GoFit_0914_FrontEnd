@@ -41,6 +41,12 @@ const router = new VueRouter({
               component: importViewComponent('LaporanPendapatan'),
             },
             {
+              path: '/laporanKinerja',
+              name: 'laporanKinerja',
+              meta: {title : 'laporan Kinerja'},
+              component: importViewComponent('LaporanKinerjaInstruktur'),
+            },
+            {
                 path: '/dashboard',
                 name: 'dashboard',
                 meta: {title : 'dashboard'},

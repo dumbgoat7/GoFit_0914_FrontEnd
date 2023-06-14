@@ -59,7 +59,7 @@
       </v-card>
         <v-card>
             <v-card-title>
-                Annual Income Report
+                Instructor Performance Report
                 <v-spacer></v-spacer>
             <v-btn
                 color="#9155FD"
