@@ -163,12 +163,12 @@ export default {
           to: "/ijin-instruktur",
         },
         {
-          icon: "mdi-email",
+          icon: "mdi-bookmark",
           title: "Booking Gym",
           to: "/booking-gym",
         },
         {
-          icon: "mdi-email",
+          icon: "mdi-book-variant",
           title: "Booking Class",
           to: "/booking-kelas",
         },
@@ -183,12 +183,12 @@ export default {
           to: "/laporanKelas",
         },
         {
-          icon: "mdi-email",
+          icon: "mdi-chart-line",
           title: "Annual Income Reports",
           to: "/laporanPendapatan",
         },
         {
-          icon: "mdi-email",
+          icon: "mdi-file",
           title: "Instructor Performance Reports",
           to: "/laporanKinerja",
         }
@@ -265,16 +265,21 @@ export default {
         },
         {
           icon: "mdi-email",
-          title: "Laporan Gym",
+          title: "Gym Monthly Reports",
           to: "/laporanGym",
         },
         {
           icon: "mdi-email",
-          title: "Laporan Kelas",
+          title: "Gym Class Monthly Reports",
           to: "/laporanKelas",
         },
         {
-          icon: "mdi-email",
+          icon: "mdi-chart-line",
+          title: "Annual Income Reports",
+          to: "/laporanPendapatan",
+        },
+        {
+          icon: "mdi-file",
           title: "Instructor Performance Reports",
           to: "/laporanKinerja",
         }

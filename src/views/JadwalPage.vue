@@ -274,7 +274,7 @@
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
                           v-model="form.jam_mulai"
-                          label="Picker in menu"
+                          label="Start Time"
                           readonly
                           v-bind="attrs"
                           v-on="on"
